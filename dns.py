@@ -1,5 +1,5 @@
-#!/usr/bin/env python3.4
-# DNS management for ci-aotumation project
+#!/usr/bin/env python
+# DNS management for OpenStack
 # Author: jiasir (Taio Jia) <jiasir@icloud.com>
 # Source Code: https://github.com/nofdev/dns-as-a-service
 
@@ -8,46 +8,47 @@
 import sys
 import os
 import logging
+import re
+import string
+
+
 
 # create logger
 logger = logging.getLogger('dns')
 logging.basicConfig(filename='dns.log', level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s' )
 
-argv = sys.argv
 
-# Some usage information.
-def usage():
-	print("Usage: {} <211.151.168.182> <www.shangpin.com>".format(os.path.basename(argv[0])))
+# get record from openstack api
+def getRecord():
+	return ['1.1.1.1', 'test.test.com']
 
-if not len(argv) == 3:
-	usage()
-	exit(1)
+record = getRecord()
+ip = record[0]
+domain = record[1]
 
 
-# Argv 1 as ip, Argv 2 as domain that you want to added.
-ip = argv[1]
-domain = argv[2]
 
-def writeHost(ip, domain):
+
+def write_host(ip, domain):
 	#Append to the hosts file.
 	with open('hosts', 'a') as hosts:
 		hosts.write(ip + ' ' + domain + '\n')
+
+
 		
-def searchDomain(ip, domain):
-	with open('hosts', 'r+') as hosts:
-		for x in hosts:
-			if x == domain:
-				x.replace(ip + domain)
-
-
-
-def hosts():
+def replace_domain(ip, domain):
 	with open('hosts', 'r') as hosts:
-		for each_line in hosts:
-			print(each_line, end='')
+		for line in hosts:
+			line = line.split()
+			if line[1] in domain:
+				os.system('sed -i "s/{0}/{1}/g" hosts'.format('line', 'ip' + ' ' + 'domain'))
+			else:
+				pass
 
-print('Current hosts file contents are:')
-hosts()
+				
+replace_domain('2.2.2.2', 'www.123.com')
+
+
 
 
 		
